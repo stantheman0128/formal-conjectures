@@ -1,0 +1,9 @@
+STOP ALL formal-conjectures Erdős statement PR shipping IMMEDIATELY.
+
+Maintainer feedback: blindly autoformalising Erdős Problems with many statement-only PRs is NOT worthwhile now — reviewing cost is too high. This was already discussed in google-deepmind/formal-conjectures#3422 and on Zulip (batch AI formalizations overwhelm review).
+
+DO NOT open any more PRs to google-deepmind/formal-conjectures.
+DO NOT spawn more subagents for Lean statements.
+If a subagent is mid-PR, abort before `gh pr create` if possible.
+Update /workspace/grok-jobs/formal-conjectures-report.md noting STOP reason (#3422 / maintainer review cost).
+Then idle or exit. Wait for operator.

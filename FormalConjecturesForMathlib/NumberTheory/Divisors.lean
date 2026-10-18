@@ -134,8 +134,7 @@ lemma consecutiveDivisorRatio_sub_one_pos {n i : ℕ}
 
 
 /-- Every enumerated divisor is at most `n`. -/
-lemma nth_divisors_le_self {n i : ℕ} (hn : n ≠ 0)
-    (hi : i < n.divisors.card) :
+lemma nth_divisors_le_self {n i : ℕ} (hi : i < n.divisors.card) :
     nth (· ∈ n.divisors) i ≤ n := by
   classical
   have hfin : (Set.ofPred (· ∈ n.divisors)).Finite := n.divisors.finite_toSet
@@ -143,8 +142,7 @@ lemma nth_divisors_le_self {n i : ℕ} (hn : n ≠ 0)
     congr 1
     ext x
     simp [Set.Finite.mem_toFinset]
-  have hmem := nth_mem_of_lt_card hfin (by rw [hcard]; exact hi)
-  exact Nat.le_of_dvd (Nat.pos_of_ne_zero hn) (Nat.dvd_of_mem_divisors hmem)
+  exact Nat.divisor_le (nth_mem_of_lt_card hfin (by rw [hcard]; exact hi))
 
 /-- The last entry of the increasing divisor enumeration is `n` itself. -/
 lemma nth_divisors_last {n : ℕ} (hn : n ≠ 0) :
@@ -152,8 +150,7 @@ lemma nth_divisors_last {n : ℕ} (hn : n ≠ 0) :
   classical
   have hmem : n ∈ n.divisors := Nat.mem_divisors_self n hn
   have hcnt : Nat.count (· ∈ n.divisors) n = n.divisors.card - 1 := by
-    have hle : ∀ d ∈ n.divisors, d ≤ n := fun d hd =>
-      Nat.le_of_dvd (Nat.pos_of_ne_zero hn) (Nat.dvd_of_mem_divisors hd)
+    have hle : ∀ d ∈ n.divisors, d ≤ n := fun _ hd => Nat.divisor_le hd
     rw [Nat.count_eq_card_filter_range]
     have heq : {x ∈ Finset.range n | x ∈ n.divisors} = n.divisors.erase n := by
       ext x
@@ -167,10 +164,9 @@ lemma nth_divisors_last {n : ℕ} (hn : n ≠ 0) :
   rw [← hcnt, nth_count (by simpa using hmem)]
 
 /-- On valid indices, the next divisor is at most `n`. -/
-lemma nth_divisors_succ_le_self {n i : ℕ} (hn : n ≠ 0)
-    (hi : i + 1 < n.divisors.card) :
+lemma nth_divisors_succ_le_self {n i : ℕ} (hi : i + 1 < n.divisors.card) :
     nth (· ∈ n.divisors) (i + 1) ≤ n :=
-  nth_divisors_le_self hn hi
+  nth_divisors_le_self hi
 
 /-- Telescoping product of consecutive ratios: `∏ d_{i+1}/d_i = d_{last}/d_0`. -/
 lemma prod_div_telescope {f : ℕ → ℝ} (m : ℕ) (hf : ∀ i ≤ m, f i ≠ 0) :

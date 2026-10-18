@@ -25,6 +25,8 @@ import FormalConjecturesUtil
   Analytic number theory (Philadelphia, Pa., 1980) (1981), 171-182.
 - [Vo84] Vose, Michael D., Integers with consecutive divisors in small ratio. J. Number Theory
   (1984), 233-238.
+- [Te87] Tenenbaum, G., Sur un problème extrémal en arithmétique. Ann. Inst. Fourier (Grenoble)
+  37 (1987), no. 2, 1-18. [doi:10.5802/aif.1083](https://doi.org/10.5802/aif.1083)
 -/
 
 open Filter Finset Real
@@ -33,7 +35,8 @@ open scoped Topology
 namespace Erdos1099
 
 /-- $h_\alpha(n)=\sum_i (d_{i+1}/d_i-1)^\alpha$ over consecutive divisors of $n$, using the
-increasing enumeration `Nat.nth (· ∈ n.divisors)` from ForMathlib. -/
+increasing enumeration `Nat.nth (· ∈ n.divisors)` (Mathlib's `Nat.nth`), with consecutive
+ratios given by `Nat.consecutiveDivisorRatio`. -/
 noncomputable def h (α : ℝ) (n : ℕ) : ℝ :=
   ∑ i ∈ range (n.divisors.card - 1), (n.consecutiveDivisorRatio i - 1) ^ α
 
@@ -53,11 +56,15 @@ $$
 
 A positive answer to the main question was provided by Vose [Vo84] by constructing a specific
 sequence.
+
+We formalise `liminf_n h_α(n) ≪_α 1` as: there is a constant `C` with `h_α(n) ≤ C` for
+infinitely many `n`. (A real-valued `Filter.liminf` would make the bound vacuous, since it
+returns a junk value when `h_α` is unbounded.)
 -/
 @[category research solved, AMS 11]
 theorem erdos_1099 :
     answer(True) ↔
-      ∀ α > (1 : ℝ), ∃ C : ℝ, 0 < C ∧ liminf (fun n : ℕ ↦ h α n) atTop ≤ C := by
+      ∀ α > (1 : ℝ), ∃ C : ℝ, ∃ᶠ n in atTop, h α n ≤ C := by
   sorry
 
 /--
@@ -108,21 +115,28 @@ theorem erdos_1099.variants.liminf_ge_one (α : ℝ) (hα : 1 < α) :
 
 /--
 Erdős asked whether $h_\alpha(n!)$ stays bounded for each fixed $\alpha > 1$.
+
+This was proved by Tenenbaum [Te87, Théorème 1 and the remark following it]: for every
+$\alpha > 1$, $h_\alpha(N) = O_\alpha(1)$ uniformly for $N \in \{k! : k \geq 1\}$.
+(erdosproblems.com still lists this variant as open.)
 -/
-@[category research open, AMS 11]
+@[category research solved, AMS 11]
 theorem erdos_1099.variants.factorial :
-    answer(sorry) ↔
+    answer(True) ↔
       ∀ α > (1 : ℝ), ∃ C : ℝ, 0 < C ∧ ∀ n : ℕ, h α n.factorial ≤ C := by
   sorry
 
 /--
 Erdős [Er81h] remarks that the least common multiple of $\{1,\ldots,n\}$ would be a good candidate
-for an infinite sequence of $n$ with $h_\alpha(n)$ bounded. It remains open whether this sequence
-satisfies this property.
+for an infinite sequence of $n$ with $h_\alpha(n)$ bounded.
+
+This was proved by Tenenbaum [Te87, Théorème 1 and the remark following it]: for every
+$\alpha > 1$, $h_\alpha(N) = O_\alpha(1)$ uniformly for $N \in \{[1, 2, \ldots, k] : k \geq 1\}$.
+(erdosproblems.com still lists this variant as open.)
 -/
-@[category research open, AMS 11]
+@[category research solved, AMS 11]
 theorem erdos_1099.variants.lcm :
-    answer(sorry) ↔
+    answer(True) ↔
       ∀ α > (1 : ℝ), ∃ C : ℝ, 0 < C ∧
         ∀ n ≥ 1, h α ((Icc 1 n).lcm id) ≤ C := by
   sorry
@@ -131,8 +145,10 @@ theorem erdos_1099.variants.lcm :
 Erdős remarks that this problem occurred to him when considering $\sum_i \frac{d_{i+1}}{d_i}$.
 It is easy to see that
 $$
-\sum_{i} \frac{d_{i+1}}{d_i}> \tau(n)+\log n,
+\sum_{i} \frac{d_{i+1}}{d_i}> \tau(n)-1+\log n \quad (n \geq 2),
 $$
+since the $\tau(n)-1$ ratios are $>1$, multiply to $n$, and $x - 1 > \log x$ for $x > 1$.
+(The stronger bound $> \tau(n)+\log n$ fails, e.g. for $n = 6$.)
 and Erdős asked whether
 $$
 \liminf \left(\sum_{i} \frac{d_{i+1}}{d_i}-\tau(n)-\log n\right)<\infty,
